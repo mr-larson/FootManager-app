@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Models\Event;
+
 Route::view('/', 'welcome');
 
 Route::view('dashboard', 'dashboard')
@@ -27,11 +29,6 @@ Route::get('/contracts', \App\Livewire\Contracts::class)
     ->middleware(['auth'])
     ->name('contracts');
 
-// Route for Main Menu view
-Route::get('/main-menu', function () {
-    return view('main-menu');
-})->middleware(['auth'])->name('main-menu');
-
 // Route for Gameplay view
 Route::get('/gameplay', function () {
     return view('gameplay');
@@ -39,9 +36,12 @@ Route::get('/gameplay', function () {
     ->middleware(['auth'])
     ->name('gameplay');
 
-// Route for Style Guide view
-Route::view('style-guide', 'style-guide')
-    ->middleware(['auth'])
-    ->name('style-guide');
+// Route for events view
+Route::get('/events', function () {
+    return Event::all();
+});
 
+// Include authentication routes
 require __DIR__.'/auth.php';
+
+
