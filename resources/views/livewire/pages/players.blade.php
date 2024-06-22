@@ -23,9 +23,11 @@
                 @else
                     <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 mt-4">
                         @foreach($players as $player)
-                            <div class="bg-gray-100 dark:bg-gray-700 shadow border relative overflow-x-auto sm:rounded-lg">
-                                <div class="bg-gradient-to-r from-blue-500 to-blue-400 px-4 py-1 text-lg font-medium text-gray-50 dark:text-gray-100 rounded-t-lg">{{ $player->firstname }} {{ $player->lastname }}</div>
-                                <div class="m-4">
+                            <x-card>
+                                <x-slot name="title">
+                                    {{ $player->firstname }} {{ $player->lastname }}
+                                </x-slot>
+                                <x-slot name="content">
                                     <div class="text-sm text-gray-600 dark:text-gray-400">{{ __('Position') }}: {{ $player->position }}</div>
                                     <div class="text-sm text-gray-600 dark:text-gray-400">{{ __('Age') }}: {{ $player->age }}</div>
                                     <div class="text-sm text-gray-600 dark:text-gray-400">{{ __('Cost') }}: {{ $player->cost }}</div>
@@ -35,15 +37,14 @@
                                     @else
                                         <div class="text-sm text-gray-600 dark:text-gray-400">{{ $player->stats }}</div>
                                     @endif
-                                </div>
-
-                                <div class="flex flex-wrap justify-around m-4">
+                                </x-slot>
+                                <x-slot name="actions">
                                     <x-primary-button wire:click="editPlayer({{ $player->id }})">{{ __('Edit') }}</x-primary-button>
                                     <x-secondary-button>
                                         <a href="{{ route('contracts', ['player_id' => $player->id]) }}">{{ __('Contracts') }}</a>
                                     </x-secondary-button>
-                                </div>
-                            </div>
+                                </x-slot>
+                            </x-card>
                         @endforeach
                     </div>
                 @endif
