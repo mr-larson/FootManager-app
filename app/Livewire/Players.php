@@ -3,11 +3,14 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\WithPagination;
 use App\Models\Player;
 use App\Models\Contract;
 
 class Players extends Component
 {
+    use WithPagination;
+
     public $firstname;
     public $lastname;
     public $age;
@@ -19,7 +22,6 @@ class Players extends Component
         'defense' => null,
         'attack' => null,
     ];
-    public $players;
     public $playerId; // For editing
     public $search = ''; // Pour la recherche
 
@@ -46,17 +48,25 @@ class Players extends Component
 
     public function mount()
     {
-        $this->players = Player::all();
+        $this->contracts = [];
     }
 
-    public function updatedSearch()
+    public function render()
     {
-        $this->players = Player::where('firstname', 'like', '%' . $this->search . '%')
+        $players = Player::where('firstname', 'like', '%' . $this->search . '%')
             ->orWhere('lastname', 'like', '%' . $this->search . '%')
             ->orWhere('position', 'like', '%' . $this->search . '%')
             ->orWhere('age', 'like', '%' . $this->search . '%')
             ->orWhere('cost', 'like', '%' . $this->search . '%')
-            ->get();
+            ->paginate(15);
+
+        return view('livewire.pages.players', ['players' => $players])
+            ->layout('layouts.app');
+    }
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
     }
 
     public function createPlayer()
@@ -73,8 +83,6 @@ class Players extends Component
         ]);
 
         $this->resetForm();
-        $this->players = Player::all(); // Refresh the players list
-
         session()->flash('message', 'Player created successfully.');
     }
 
@@ -106,19 +114,14 @@ class Players extends Component
         ]);
 
         $this->resetForm();
-        $this->players = Player::all(); // Refresh the players list
-
         session()->flash('message', 'Player updated successfully.');
     }
 
     public function deletePlayer($id)
     {
         Player::findOrFail($id)->delete();
-        $this->players = Player::all(); // Refresh the players list
-
-        $this->resetForm(); // Reset the form to return to create mode
-
         session()->flash('message', 'Player deleted successfully.');
+        $this->resetForm(); // Reset the form to return to create mode
     }
 
     public function manageContracts($playerId)
@@ -129,10 +132,5 @@ class Players extends Component
     public function resetForm()
     {
         $this->reset(['firstname', 'lastname', 'age', 'position', 'cost', 'stats', 'playerId']);
-    }
-
-    public function render()
-    {
-        return view('livewire.pages.players')->layout('layouts.app');
     }
 }

@@ -3,19 +3,21 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\WithPagination;
 use App\Models\Contract;
 use App\Models\Player;
 use App\Models\Team;
 
 class Contracts extends Component
 {
+    use WithPagination;
+
     public $contractId;
     public $player_id;
     public $team_id;
     public $salary;
     public $start_date;
     public $end_date;
-    public $contracts;
     public $players;
     public $teams;
 
@@ -29,9 +31,16 @@ class Contracts extends Component
 
     public function mount()
     {
-        $this->contracts = Contract::all();
         $this->players = Player::all();
         $this->teams = Team::all();
+    }
+
+    public function render()
+    {
+        $contracts = Contract::with(['player', 'team'])->paginate(10);
+
+        return view('livewire.pages.contracts', ['contracts' => $contracts])
+            ->layout('layouts.app');
     }
 
     public function createContract()
@@ -47,8 +56,6 @@ class Contracts extends Component
         ]);
 
         $this->resetForm();
-        $this->contracts = Contract::all(); // Refresh the contracts list
-
         session()->flash('message', 'Contract created successfully.');
     }
 
@@ -77,26 +84,17 @@ class Contracts extends Component
         ]);
 
         $this->resetForm();
-        $this->contracts = Contract::all(); // Refresh the contracts list
-
         session()->flash('message', 'Contract updated successfully.');
     }
 
     public function deleteContract($id)
     {
         Contract::findOrFail($id)->delete();
-        $this->contracts = Contract::all(); // Refresh the contracts list
-
         session()->flash('message', 'Contract deleted successfully.');
     }
 
     public function resetForm()
     {
         $this->reset(['player_id', 'team_id', 'salary', 'start_date', 'end_date', 'contractId']);
-    }
-
-    public function render()
-    {
-        return view('livewire.pages.contracts')->layout('layouts.app');
     }
 }

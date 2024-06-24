@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Style pour permettre le défilement horizontal des tables */
+body {
+    overflow-x: hidden;
+}
+
+.table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-container table th, .table-container table td {
+    white-space: nowrap;
+}
+
+

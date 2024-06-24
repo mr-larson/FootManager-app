@@ -3,13 +3,14 @@
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             {{ __('Players') }}
         </h2>
+
     </div>
 </x-slot>
 
 <div class="py-12">
-    <div class="mx-auto sm:px-6 lg:px-8 flex space-x-4">
-        <div class="flex-1 p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-            <section>
+    <div class="mx-auto sm:px-6 lg:px-8 flex flex-wrap lg:flex-nowrap space-y-4 lg:space-y-0 lg:space-x-4">
+        <div class="flex-1 p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg overflow-x-auto">
+            <section class="max-w-5xl">
                 <header>
                     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                         {{ __('List of all players.') }}
@@ -47,11 +48,14 @@
                             </x-card>
                         @endforeach
                     </div>
+                    <div class="mt-6">
+                        {{ $players->links() }}
+                    </div>
                 @endif
             </section>
         </div>
 
-        <div class="w-1/5 p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+        <div class="w-full lg:w-1/5 p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
             <div class="max-w-xl">
                 <section>
                     <header>
@@ -73,9 +77,7 @@
                         <div>
                             <x-input-label for="lastname" :value="__('Last Name')" />
                             <x-input-text wire:model="lastname" id="lastname" name="lastname" type="text" class="mt-1 block w-full" required autocomplete="lastname" />
-                            <x-input-error class="mt-2" :messages="$errors->get('lastname')" />
                         </div>
-
                         <div>
                             <x-input-label for="age" :value="__('Age')" />
                             <x-input-text wire:model="age" id="age" name="age" type="number" class="mt-1 block w-full" required />

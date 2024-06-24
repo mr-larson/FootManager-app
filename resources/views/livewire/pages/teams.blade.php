@@ -3,10 +3,9 @@
         {{ __('Teams') }}
     </h2>
 </x-slot>
-
 <div class="py-12">
-    <div class="mx-auto sm:px-6 lg:px-8 flex space-x-4">
-        <div class="flex-1 p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+    <div class="mx-auto sm:px-6 lg:px-8 flex flex-wrap lg:flex-nowrap space-y-4 lg:space-y-0 lg:space-x-4">
+        <div class="flex-1 p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg overflow-x-auto">
             <section>
                 <header>
                     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
@@ -19,14 +18,11 @@
                         {{ __('No teams found. Please create a new team.') }}
                     </div>
                 @else
-                    <x-table :headers="['Name', 'Description', 'Budget', 'Wins', 'Draws', 'Losses', '', '']">
+                    <x-table :headers="['Name', 'Budget', 'Wins', 'Draws', 'Losses', 'Coach', 'Formation', 'Captain', 'Players', 'Actions']">
                         @foreach($teams as $team)
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                     {{ $team->name }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                    {{ $team->description }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                     {{ $team->budget }}
@@ -40,8 +36,14 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                     {{ $team->losses }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <x-primary-button wire:click="editTeam({{ $team->id }})">{{ __('Edit') }}</x-primary-button>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                    {{ $team->coach}}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                    {{ $team->formation }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                    {{ $team->captain }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                     <x-show>
@@ -51,7 +53,7 @@
                                                 <span x-show="show">{{ __('Hide Players') }}</span>
                                             </button>
                                         </x-slot>
-                                        <x-table :headers="['First Name', 'Last Name', 'Position', 'Age', 'Cost', 'Stats']">
+                                        <x-table :headers="['First Name', 'Last Name', 'Position', 'Stats']">
                                             @foreach($team->players as $player)
                                                 <tr>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
@@ -64,12 +66,6 @@
                                                         {{ $player->position }}
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                                        {{ $player->age }}
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                                        {{ $player->cost }}
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                                         {{ is_array($player->stats) ? implode(', ', $player->stats) : $player->stats }}
                                                     </td>
                                                 </tr>
@@ -77,14 +73,20 @@
                                         </x-table>
                                     </x-show>
                                 </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <x-primary-button wire:click="editTeam({{ $team->id }})">{{ __('Edit') }}</x-primary-button>
+                                </td>
                             </tr>
                         @endforeach
                     </x-table>
+                    <div class="mt-6">
+                        {{ $teams->links() }}
+                    </div>
                 @endif
             </section>
         </div>
 
-        <div class="w-1/5 p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+        <div class="w-full lg:w-1/5 p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
             <div class="max-w-xl">
                 <section>
                     <header>
@@ -105,15 +107,32 @@
                         </div>
 
                         <div>
-                            <x-input-label for="description" :value="__('Description')" />
-                            <x-input-textarea wire:model="description" id="description" name="description" class="mt-1 block w-full" />
-                            <x-input-error class="mt-2" :messages="$errors->get('description')" />
+                            <x-input-label for="coach" :value="__('Coach')" />
+                            <x-input-text wire:model="coach" id="coach" name="coach" type="text" class="mt-1 block w-full" />
+                            <x-input-error class="mt-2" :messages="$errors->get('coach')" />
                         </div>
 
                         <div>
-                            <x-input-label for="budget" :value="__('Budget')" />
-                            <x-input-text wire:model="budget" id="budget" name="budget" type="number" class="mt-1 block w-full" required />
-                            <x-input-error class="mt-2" :messages="$errors->get('budget')" />
+                            <x-input-label for="formation" :value="__('Formation')" />
+                            <x-input-text wire:model="formation" id="formation" name="formation" type="text" class="mt-1 block w-full" />
+                            <x-input-error class="mt-2" :messages="$errors->get('formation')" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="captain" :value="__('Captain')" />
+                            <x-input-select wire:model="captain" id="captain" name="captain" class="mt-1 block w-full">
+                                <option value="">{{ __('Select a captain') }}</option>
+                                @foreach($players as $player)
+                                    <option value="{{ $player->id }}">{{ $player->firstname }} {{ $player->lastname }}</option>
+                                @endforeach
+                            </x-input-select>
+                            <x-input-error class="mt-2" :messages="$errors->get('captain')" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="description" :value="__('Description')" />
+                            <x-input-textarea wire:model="description" id="description" name="description" class="mt-1 block w-full" />
+                            <x-input-error class="mt-2" :messages="$errors->get('description')" />
                         </div>
 
                         <div class="flex items-center gap-4">

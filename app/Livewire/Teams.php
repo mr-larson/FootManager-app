@@ -1,27 +1,44 @@
 <?php
-
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\WithPagination;
 use App\Models\Team;
+use App\Models\Player;
 
 class Teams extends Component
 {
+    use WithPagination;
+
     public $name;
     public $description;
     public $budget;
-    public $teams;
+    public $coach;
+    public $formation;
+    public $captain;
     public $teamId; // For editing
+    public $players = [];
 
     protected $rules = [
         'name' => 'required|string|max:255',
         'description' => 'nullable|string',
         'budget' => 'required|integer',
+        'coach' => 'nullable|string|max:255',
+        'formation' => 'nullable|string|max:255',
+        'captain' => 'nullable|integer|exists:players,id',
     ];
 
     public function mount()
     {
-        $this->teams = Team::all();
+        $this->players = Player::all();
+    }
+
+    public function render()
+    {
+        $teams = Team::with(['activePlayers'])->paginate(10);
+
+        return view('livewire.pages.teams', ['teams' => $teams])
+            ->layout('layouts.app');
     }
 
     public function createTeam()
@@ -32,11 +49,12 @@ class Teams extends Component
             'name' => $this->name,
             'description' => $this->description,
             'budget' => $this->budget,
+            'coach' => $this->coach,
+            'formation' => $this->formation,
+            'captain' => $this->captain,
         ]);
 
-        $this->reset(['name', 'description', 'budget']);
-        $this->teams = Team::all(); // Refresh the teams list
-
+        $this->reset(['name', 'description', 'budget', 'coach', 'formation', 'captain']);
         session()->flash('message', 'Team created successfully.');
     }
 
@@ -47,6 +65,9 @@ class Teams extends Component
         $this->name = $team->name;
         $this->description = $team->description;
         $this->budget = $team->budget;
+        $this->coach = $team->coach;
+        $this->formation = $team->formation;
+        $this->captain = $team->captain;
     }
 
     public function updateTeam()
@@ -58,25 +79,18 @@ class Teams extends Component
             'name' => $this->name,
             'description' => $this->description,
             'budget' => $this->budget,
+            'coach' => $this->coach,
+            'formation' => $this->formation,
+            'captain' => $this->captain,
         ]);
 
-        $this->reset(['name', 'description', 'budget', 'teamId']);
-        $this->teams = Team::all(); // Refresh the teams list
-
+        $this->reset(['name', 'description', 'budget', 'coach', 'formation', 'captain', 'teamId']);
         session()->flash('message', 'Team updated successfully.');
     }
 
     public function deleteTeam($id)
     {
         Team::findOrFail($id)->delete();
-        $this->teams = Team::all(); // Refresh the teams list
-
         session()->flash('message', 'Team deleted successfully.');
     }
-
-    public function render()
-    {
-        return view('livewire.pages.teams')->layout('layouts.app');
-    }
 }
-
