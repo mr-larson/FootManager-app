@@ -21,9 +21,6 @@ class Team extends Model
         'wins',
         'draws',
         'losses',
-        'coach',
-        'formation',
-        'captain',
     ];
 
     public function players(): BelongsToMany

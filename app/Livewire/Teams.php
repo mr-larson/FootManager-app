@@ -13,29 +13,29 @@ class Teams extends Component
     public $name;
     public $description;
     public $budget;
-    public $coach;
-    public $formation;
-    public $captain;
     public $teamId; // For editing
     public $players = [];
+    public $showPlayers = [];
 
     protected $rules = [
         'name' => 'required|string|max:255',
         'description' => 'nullable|string',
         'budget' => 'required|integer',
-        'coach' => 'nullable|string|max:255',
-        'formation' => 'nullable|string|max:255',
-        'captain' => 'nullable|integer|exists:players,id',
     ];
 
     public function mount()
     {
         $this->players = Player::all();
+        // Initialize showPlayers array for all teams
+        $teams = Team::all();
+        foreach ($teams as $team) {
+            $this->showPlayers[$team->id] = false;
+        }
     }
 
     public function render()
     {
-        $teams = Team::with(['activePlayers'])->paginate(10);
+        $teams = Team::with(['activePlayers'])->paginate(8);
 
         return view('livewire.pages.teams', ['teams' => $teams])
             ->layout('layouts.app');
@@ -49,12 +49,9 @@ class Teams extends Component
             'name' => $this->name,
             'description' => $this->description,
             'budget' => $this->budget,
-            'coach' => $this->coach,
-            'formation' => $this->formation,
-            'captain' => $this->captain,
         ]);
 
-        $this->reset(['name', 'description', 'budget', 'coach', 'formation', 'captain']);
+        $this->reset(['name', 'description', 'budget']);
         session()->flash('message', 'Team created successfully.');
     }
 
@@ -65,9 +62,6 @@ class Teams extends Component
         $this->name = $team->name;
         $this->description = $team->description;
         $this->budget = $team->budget;
-        $this->coach = $team->coach;
-        $this->formation = $team->formation;
-        $this->captain = $team->captain;
     }
 
     public function updateTeam()
@@ -79,12 +73,9 @@ class Teams extends Component
             'name' => $this->name,
             'description' => $this->description,
             'budget' => $this->budget,
-            'coach' => $this->coach,
-            'formation' => $this->formation,
-            'captain' => $this->captain,
         ]);
 
-        $this->reset(['name', 'description', 'budget', 'coach', 'formation', 'captain', 'teamId']);
+        $this->reset(['name', 'description', 'budget', 'teamId']);
         session()->flash('message', 'Team updated successfully.');
     }
 
@@ -92,5 +83,10 @@ class Teams extends Component
     {
         Team::findOrFail($id)->delete();
         session()->flash('message', 'Team deleted successfully.');
+    }
+
+    public function togglePlayers($teamId)
+    {
+        $this->showPlayers[$teamId] = !$this->showPlayers[$teamId];
     }
 }

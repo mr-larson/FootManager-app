@@ -18,11 +18,14 @@
                         {{ __('No teams found. Please create a new team.') }}
                     </div>
                 @else
-                    <x-table :headers="['Name', 'Budget', 'Wins', 'Draws', 'Losses', 'Coach', 'Formation', 'Captain', 'Players', 'Actions']">
+                    <x-table :headers="['Name', 'Budget', 'Wins', 'Draws', 'Losses', '']">
                         @foreach($teams as $team)
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                    {{ $team->name }}
+                            <tr class="relative group">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 relative">
+                                    <span class="cursor-pointer">{{ $team->name }}</span>
+                                    <div class="absolute left-0 top-full mt-1 h-8 bg-gray-800 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-2">
+                                        {{ $team->description }}
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                     {{ $team->budget }}
@@ -36,26 +39,19 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                     {{ $team->losses }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                    {{ $team->coach}}
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <x-primary-button wire:click="editTeam({{ $team->id }})">{{ __('Edit') }}</x-primary-button>
+                                    <x-secondary-button wire:click="togglePlayers({{ $team->id }})">
+                                        {{ $showPlayers[$team->id] ? __('Hide Players') : __('Show Players') }}
+                                    </x-secondary-button>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                    {{ $team->formation }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                    {{ $team->captain }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                    <x-show>
-                                        <x-slot name="trigger">
-                                            <button class="text-blue-600 hover:text-blue-900">
-                                                <span x-show="!show">{{ __('Show Players') }}</span>
-                                                <span x-show="show">{{ __('Hide Players') }}</span>
-                                            </button>
-                                        </x-slot>
+                            </tr>
+                            @if($showPlayers[$team->id] ?? false)
+                                <tr>
+                                    <td colspan="6" class="px-6 py-4">
                                         <x-table :headers="['First Name', 'Last Name', 'Position', 'Stats']">
                                             @foreach($team->players as $player)
-                                                <tr>
+                                                <tr class="">
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                                         {{ $player->firstname }}
                                                     </td>
@@ -71,12 +67,9 @@
                                                 </tr>
                                             @endforeach
                                         </x-table>
-                                    </x-show>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <x-primary-button wire:click="editTeam({{ $team->id }})">{{ __('Edit') }}</x-primary-button>
-                                </td>
-                            </tr>
+                                    </td>
+                                </tr>
+                            @endif
                         @endforeach
                     </x-table>
                     <div class="mt-6">
@@ -107,26 +100,9 @@
                         </div>
 
                         <div>
-                            <x-input-label for="coach" :value="__('Coach')" />
-                            <x-input-text wire:model="coach" id="coach" name="coach" type="text" class="mt-1 block w-full" />
-                            <x-input-error class="mt-2" :messages="$errors->get('coach')" />
-                        </div>
-
-                        <div>
-                            <x-input-label for="formation" :value="__('Formation')" />
-                            <x-input-text wire:model="formation" id="formation" name="formation" type="text" class="mt-1 block w-full" />
-                            <x-input-error class="mt-2" :messages="$errors->get('formation')" />
-                        </div>
-
-                        <div>
-                            <x-input-label for="captain" :value="__('Captain')" />
-                            <x-input-select wire:model="captain" id="captain" name="captain" class="mt-1 block w-full">
-                                <option value="">{{ __('Select a captain') }}</option>
-                                @foreach($players as $player)
-                                    <option value="{{ $player->id }}">{{ $player->firstname }} {{ $player->lastname }}</option>
-                                @endforeach
-                            </x-input-select>
-                            <x-input-error class="mt-2" :messages="$errors->get('captain')" />
+                            <x-input-label for="budget" :value="__('Budget')" />
+                            <x-input-text wire:model="budget" id="budget" name="budget" type="number" class="mt-1 block w-full" required />
+                            <x-input-error class="mt-2" :messages="$errors->get('budget')" />
                         </div>
 
                         <div>
