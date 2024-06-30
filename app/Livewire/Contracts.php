@@ -29,7 +29,7 @@ class Contracts extends Component
         'end_date' => 'required|date',
     ];
 
-    public function mount()
+    public function mount(): void
     {
         $this->players = Player::all();
         $this->teams = Team::all();
@@ -43,7 +43,7 @@ class Contracts extends Component
             ->layout('layouts.app');
     }
 
-    public function createContract()
+    public function createContract(): void
     {
         $this->validate();
 
@@ -59,7 +59,7 @@ class Contracts extends Component
         session()->flash('message', 'Contract created successfully.');
     }
 
-    public function editContract($id)
+    public function editContract($id): void
     {
         $contract = Contract::findOrFail($id);
         $this->contractId = $contract->id;
@@ -70,7 +70,7 @@ class Contracts extends Component
         $this->end_date = $contract->end_date->format('Y-m-d');
     }
 
-    public function updateContract()
+    public function updateContract(): void
     {
         $this->validate();
 
@@ -87,13 +87,13 @@ class Contracts extends Component
         session()->flash('message', 'Contract updated successfully.');
     }
 
-    public function deleteContract($id)
+    public function deleteContract($id): void
     {
         Contract::findOrFail($id)->delete();
         session()->flash('message', 'Contract deleted successfully.');
     }
 
-    public function resetForm()
+    public function resetForm(): void
     {
         $this->reset(['player_id', 'team_id', 'salary', 'start_date', 'end_date', 'contractId']);
     }

@@ -48,7 +48,7 @@
                             </tr>
                             @if($showPlayers[$team->id] ?? false)
                                 <tr>
-                                    <td colspan="6" class="px-6 py-4">
+                                    <td colspan="6" class="px-3 py-1">
                                         <x-table :headers="['First Name', 'Last Name', 'Position', 'Stats']">
                                             @foreach($team->players as $player)
                                                 <tr class="">

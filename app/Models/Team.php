@@ -9,8 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Team extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'teams';
 
@@ -41,5 +40,16 @@ class Team extends Model
     public function awayMatches(): HasMany
     {
         return $this->hasMany(SoccerMatch::class, 'team_id_away');
+    }
+
+    public function totalMatchesPlayed(): int
+    {
+        return $this->wins + $this->draws + $this->losses;
+    }
+
+    public function remainingBudget(): int
+    {
+        $totalSalary = $this->players()->sum('salary');
+        return $this->budget - $totalSalary;
     }
 }

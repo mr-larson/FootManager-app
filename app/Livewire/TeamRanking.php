@@ -10,12 +10,12 @@ class TeamRanking extends Component
 {
     public $teams = [];
 
-    public function mount()
+    public function mount(): void
     {
         $this->updateRankings();
     }
 
-    public function updateRankings()
+    public function updateRankings(): void
     {
         $teams = Team::all();
 

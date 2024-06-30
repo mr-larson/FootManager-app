@@ -43,6 +43,9 @@ new class extends Component
                     <x-nav-link :href="route('contracts')" :active="request()->routeIs('contracts')" wire:navigate>
                         {{ __('Contracts') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('soccer-matches')" :active="request()->routeIs('soccer-matches')" wire:navigate>
+                        {{ __('Matches') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -102,6 +105,9 @@ new class extends Component
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('contracts')" :active="request()->routeIs('contracts')" wire:navigate>
                 {{ __('Contracts') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('soccer-matches')" :active="request()->routeIs('soccer-matches')" wire:navigate>
+                {{ __('Matches') }}
             </x-responsive-nav-link>
         </div>
 

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Livewire;
 
 use Livewire\Component;
@@ -22,10 +21,8 @@ class Players extends Component
         'defense' => null,
         'attack' => null,
     ];
-    public $playerId; // For editing
-    public $search = ''; // Pour la recherche
-
-    // Pour la gestion des contrats
+    public $playerId;
+    public $search = '';
     public $contracts;
     public $salary;
     public $start_date;
@@ -46,14 +43,15 @@ class Players extends Component
         'end_date' => 'nullable|date',
     ];
 
-    public function mount()
+    public function mount(): void
     {
         $this->contracts = [];
     }
 
     public function render()
     {
-        $players = Player::where('firstname', 'like', '%' . $this->search . '%')
+        $players = Player::query()
+            ->where('firstname', 'like', '%' . $this->search . '%')
             ->orWhere('lastname', 'like', '%' . $this->search . '%')
             ->orWhere('position', 'like', '%' . $this->search . '%')
             ->orWhere('age', 'like', '%' . $this->search . '%')
@@ -64,12 +62,12 @@ class Players extends Component
             ->layout('layouts.app');
     }
 
-    public function updatedSearch()
+    public function updatedSearch(): void
     {
         $this->resetPage();
     }
 
-    public function createPlayer()
+    public function createPlayer(): void
     {
         $this->validate();
 
@@ -86,7 +84,7 @@ class Players extends Component
         session()->flash('message', 'Player created successfully.');
     }
 
-    public function editPlayer($id)
+    public function editPlayer($id): void
     {
         $player = Player::findOrFail($id);
         $this->playerId = $player->id;
@@ -99,7 +97,7 @@ class Players extends Component
         $this->contracts = Contract::where('player_id', $id)->get();
     }
 
-    public function updatePlayer()
+    public function updatePlayer(): void
     {
         $this->validate();
 
@@ -117,19 +115,19 @@ class Players extends Component
         session()->flash('message', 'Player updated successfully.');
     }
 
-    public function deletePlayer($id)
+    public function deletePlayer($id): void
     {
         Player::findOrFail($id)->delete();
         session()->flash('message', 'Player deleted successfully.');
-        $this->resetForm(); // Reset the form to return to create mode
+        $this->resetForm();
     }
 
-    public function manageContracts($playerId)
+    public function manageContracts($playerId): void
     {
         $this->contracts = Contract::where('player_id', $playerId)->get();
     }
 
-    public function resetForm()
+    public function resetForm(): void
     {
         $this->reset(['firstname', 'lastname', 'age', 'position', 'cost', 'stats', 'playerId']);
     }

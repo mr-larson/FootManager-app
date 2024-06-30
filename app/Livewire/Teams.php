@@ -13,8 +13,7 @@ class Teams extends Component
     public $name;
     public $description;
     public $budget;
-    public $teamId; // For editing
-    public $players = [];
+    public $teamId;
     public $showPlayers = [];
 
     protected $rules = [
@@ -23,25 +22,23 @@ class Teams extends Component
         'budget' => 'required|integer',
     ];
 
-    public function mount()
+    public function mount(): void
     {
-        $this->players = Player::all();
-        // Initialize showPlayers array for all teams
-        $teams = Team::all();
-        foreach ($teams as $team) {
-            $this->showPlayers[$team->id] = false;
-        }
+        // Initialize showPlayers array
+        $this->showPlayers = Team::pluck('id')->flip()->map(function () {
+            return false;
+        })->toArray();
     }
 
     public function render()
     {
-        $teams = Team::with(['activePlayers'])->paginate(8);
+        $teams = Team::with('activePlayers')->paginate(8);
 
         return view('livewire.pages.teams', ['teams' => $teams])
             ->layout('layouts.app');
     }
 
-    public function createTeam()
+    public function createTeam(): void
     {
         $this->validate();
 
@@ -52,10 +49,11 @@ class Teams extends Component
         ]);
 
         $this->reset(['name', 'description', 'budget']);
+        $this->mount(); // Re-initialize the showPlayers array
         session()->flash('message', 'Team created successfully.');
     }
 
-    public function editTeam($id)
+    public function editTeam($id): void
     {
         $team = Team::findOrFail($id);
         $this->teamId = $team->id;
@@ -64,7 +62,7 @@ class Teams extends Component
         $this->budget = $team->budget;
     }
 
-    public function updateTeam()
+    public function updateTeam(): void
     {
         $this->validate();
 
@@ -76,16 +74,18 @@ class Teams extends Component
         ]);
 
         $this->reset(['name', 'description', 'budget', 'teamId']);
+        $this->mount(); // Re-initialize the showPlayers array
         session()->flash('message', 'Team updated successfully.');
     }
 
-    public function deleteTeam($id)
+    public function deleteTeam($id): void
     {
         Team::findOrFail($id)->delete();
+        $this->mount(); // Re-initialize the showPlayers array
         session()->flash('message', 'Team deleted successfully.');
     }
 
-    public function togglePlayers($teamId)
+    public function togglePlayers($teamId): void
     {
         $this->showPlayers[$teamId] = !$this->showPlayers[$teamId];
     }

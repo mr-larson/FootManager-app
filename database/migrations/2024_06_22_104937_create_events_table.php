@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('title');
             $table->dateTime('start');
             $table->dateTime('end');
+            $table->foreignId('soccer_match_id')->constrained('soccer_matches')->onDelete('cascade');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

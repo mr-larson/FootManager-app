@@ -19,8 +19,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  **/
 class Player extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'players';
 
@@ -45,5 +44,10 @@ class Player extends Model
     public function getFullNameAttribute(): string
     {
         return "{$this->firstname} {$this->lastname}";
+    }
+
+    public function currentTeam(): Model|BelongsToMany
+    {
+        return $this->teams()->wherePivot('end_date', '>', now())->first();
     }
 }
